@@ -1,4 +1,4 @@
-module Hi.Header where
+module Hi.Core.CoreDefs where
 
 import Data.Unique
 
@@ -10,14 +10,14 @@ type CoreBind var annot = (var, CoreTerm var annot)
 
 type CoreAlts var annot = [((Constructor, [CoreBind var annot]), CoreTerm var annot)]
 
-data TyUnivIdx
+data TUnivIdx
     = TUIZero
-    | TUISucc TyUnivIdx
+    | TUISucc TUnivIdx
     | TUIMVar MetaVar
     deriving (Eq)
 
-data Sort
-    = SType TyUnivIdx
+data CoreSort
+    = SType TUnivIdx
     | SProp
     deriving (Eq)
 
@@ -28,6 +28,6 @@ data CoreTerm var annot
     | CLam annot (CoreBind var annot) (CoreTerm var annot)
     | CAll annot (CoreBind var annot) (CoreTerm var annot)
     | CMat annot (CoreTerm var annot) (CoreAlts var annot)
-    | CSrt annot Sort
+    | CSrt annot CoreSort
     | MVar annot MetaVar
     deriving (Eq)
