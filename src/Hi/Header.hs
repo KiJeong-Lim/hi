@@ -8,7 +8,7 @@ type MetaVar = Unique
 
 type CoreBind var annot = (var, CoreTerm var annot)
 
-type CoreAlts var annot = [((Constructor, [CoreBind varr annot]), CoreTerm var annot)]
+type CoreAlts var annot = [((Constructor, [CoreBind var annot]), CoreTerm var annot)]
 
 data TyUnivIdx
     = TUIZero
