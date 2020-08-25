@@ -1,0 +1,16 @@
+theory Example.Classic;
+
+thm cl1 : forall (a : O). a || not a {
+    -- [1 / 1] forall (a : O). a || not a;
+    intro a;
+    -- [1 / 1] a : O |- a || not a;
+    raa;
+    -- [1 / 1] a : O |- not (a || not a) -> bottom;
+    intro h1;
+    -- [1 / 1] a : O, h1 : not (a || not a) |- bottom;
+    apply h1;
+    -- [1 / 1] a : O, h1 : not (a || not a) |- a || not a;
+    apply (fun (h2 : not a) => Right h2);
+    -- [1 / 1] a : O, h1 : not (a || not a) |- not a;
+    apply (fun (h3 : a) => h1 (Left h3));
+}

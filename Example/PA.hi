@@ -1,0 +1,90 @@
+theory Example.PA;
+
+def Nat : Type {
+    Zero : Nat;
+    Succ : Nat -> Nat;
+}
+
+axm NatInd : forall (prop : Nat -> O). p Zero -> (forall (pred : Nat). prop pred -> prop (Succ pred)) -> (forall (n : Nat). prop n);
+
+fun plus : Nat -> Nat -> Nat {
+    plus x Zero := x;
+    plus x (Succ y) := Succ (plus x y);
+}
+
+fun mult : Nat -> Nat -> Nat {
+    mult x Zero := Zero;
+    mult x (Succ y) := plus x (mult x y);
+}
+
+thm pa1 : forall (x : Nat). plus Zero x = x {
+    -- [1 / 1] |- forall (x : Nat). plus Zero x = x;
+    apply NatInd;
+    -- [1 / 2] |- plus Zero Zero = Zero;
+    -- [2 / 2] |- forall (pred : Nat). (plus Zero pred = pred) -> (plus Zero (Succ pred) = Succ pred);
+    eval;
+    -- [1 / 2] |- Zero = Zero;
+    -- [2 / 2] |- forall (pred : Nat). (plus Zero pred = pred) -> (plus Zero (Succ pred) = Succ pred);
+    refl;
+    -- [1 / 1] |- forall (pred : Nat). (plus Zero pred = pred) -> (plus Zero (Succ pred) = Succ pred);
+    intro x;
+    -- [1 / 1] x : Nat |- (plus Zero x = x) -> (plus Zero (Succ x) = Succ x);
+    eval;
+    -- [1 / 1] x : Nat |- (plus Zero x = x) -> (Succ (plus Zero x) = Succ x);
+    intro h1;
+    -- [1 / 1] x : Nat, h1 : plus Zero x = x |- Succ (plus Zero x) = Succ x;
+    refl;
+    -- [1 / 1] x : Nat, h1 : plus Zero x = x |- plus Zero x = x;
+    apply h1;
+}
+
+thm pa2 : forall (x : Nat). forall (y : Nat). plus (Succ x) y = Succ (plus x y) {
+    -- [1 / 1] |- forall (x : Nat). forall (y : Nat). plus (Succ x) y = Succ (plus x y);
+    intro x;
+    -- [1 / 1] x : Nat |- forall (y : Nat). plus (Succ x) y = Succ (plus x y);
+    apply NatInd;
+    -- [1 / 2] x : Nat |- plus (Succ x) Zero = Succ (plus x Zero);
+    -- [2 / 2] x : Nat |- forall (pred : Nat). (plus (Succ x) pred = Succ (plus x pred)) -> (plus (Succ x) (Succ pred) = Succ (plus x (Succ pred)));
+    eval;
+    -- [1 / 2] x : Nat |- Succ x = Succ x;
+    -- [2 / 2] x : Nat |- forall (pred : Nat). (plus (Succ x) pred = Succ (plus x pred)) -> (plus (Succ x) (Succ pred) = Succ (plus x (Succ pred)));
+    refl;
+    -- [1 / 1] x : Nat |- forall (pred : Nat). (plus (Succ x) pred = Succ (plus x pred)) -> (plus (Succ x) (Succ pred) = Succ (plus x (Succ pred)));
+    intro y;
+    -- [1 / 1] x : Nat, y : Nat |- (plus (Succ x) y = Succ (plus x y)) -> (plus (Succ x) (Succ y) = Succ (plus x (Succ y)));
+    eval;
+    -- [1 / 1] x : Nat, y : Nat |- (plus (Succ x) y = Succ (plus x y)) -> (Succ (plus (Succ x) y) = Succ (Succ (plus x y)));
+    intro h1;
+    -- [1 / 1] x : Nat, y : Nat, h1 : plus (Succ x) y = Succ (plus x y) |- Succ (plus (Succ x) y) = Succ (Succ (plus x y));
+    refl;
+    -- [1 / 1] x : Nat, y : Nat, h1 : plus (Succ x) y = Succ (plus x y) |- plus (Succ x) y = Succ (plus x y);
+    apply h1;
+}
+
+thm pa3 : forall (x : Nat). forall (y : Nat). plus x y = plus y x {
+    -- [1 / 1] |- forall (x : Nat). forall (y : Nat). plus x y = plus y x;
+    apply NatInd;
+    -- [1 / 2] |- forall (y : Nat). plus Zero y = plus y Zero;
+    -- [2 / 2] |- forall (prec : Nat). (forall (y : Nat). plus prec y = plus y prec) -> (forall (y : Nat). plus (Succ pred) y = plus y (Succ pred));
+    intro x;
+    -- [1 / 2] x : Nat |- plus Zero x = plus x Zero;
+    -- [2 / 2] |- forall (prec : Nat). (forall (y : Nat). plus prec y = plus y prec) -> (forall (y : Nat). plus (Succ pred) y = plus y (Succ pred));
+    eval;
+    -- [1 / 2] x : Nat |- plus Zero x = x;
+    -- [2 / 2] |- forall (prec : Nat). (forall (y : Nat). plus prec y = plus y prec) -> (forall (y : Nat). plus (Succ pred) y = plus y (Succ pred));
+    apply pa1;
+    -- [1 / 1] |- forall (prec : Nat). (forall (y : Nat). plus prec y = plus y prec) -> (forall (y : Nat). plus (Succ pred) y = plus y (Succ pred));
+    intro x;
+    -- [1 / 1] x : Nat |- (forall (y : Nat). plus x y = plus y x) -> (forall (y : Nat). plus (Succ x) y = plus y (Succ x));
+    intro h1;
+    -- [1 / 1] x : Nat, h1 : forall (y : Nat). plus x y = plus y x |- forall (y : Nat). plus (Succ x) y = plus y (Succ x);
+    intro y;
+    -- [1 / 1] x : Nat, h1 : forall (y1 : Nat). plus x y1 = plus y1 x, y : Nat |- plus (Succ x) y = plus y (Succ x);
+    rewrite "=>" (pa2 x y);
+    -- [1 / 1] x : Nat, h1 : forall (y1 : Nat). plus x y1 = plus y1 x, y : Nat |- Succ (plus x y) = plus y (Succ x);
+    eval;
+    -- [1 / 1] x : Nat, h1 : forall (y1 : Nat). plus x y1 = plus y1 x, y : Nat |- Succ (plus x y) = Succ (plus y x);
+    refl;
+    -- [1 / 1] x : Nat, h1 : forall (y1 : Nat). plus x y1 = plus y1 x, y : Nat |- plus x y = plus y x;
+    apply h1;
+}
