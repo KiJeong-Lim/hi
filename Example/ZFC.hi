@@ -1,0 +1,16 @@
+Module Example.ZFC;
+
+Signature Set : Type {
+    in : Set -> Set -> Prop;
+}
+
+Infix `in` 5;
+
+Axiom axiom_of_existence : exist a. forall x. not (x `in` a);
+
+Axiom axiom_of_extensionality : forall x. forall y. (forall z. z `in` x <-> z `in` y) -> x = y;
+
+Lemma the_empty_set_exists_uniquely : exist a. forall a'. a = a' <-> (forall x. not (x `in` a')) {
+    -- [1 / 1] |- exist a. forall a'. a = a' <-> (forall x. not (x `in` a'));
+    -- [1 / 1] |- exist a. forall a'. a = a' <-> (forall x. not (x `in` a'));
+}
